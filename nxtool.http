@@ -1,0 +1,6 @@
+@nxtool_HostAddress = http://localhost:5282
+
+GET {{nxtool_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
