@@ -9,6 +9,12 @@
     }
   },
   "profiles": {
+    "nxtool": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SecretKey": "ADMIN"
+      }
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
@@ -16,7 +22,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5282",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SecretKey": "ADMIN"
       }
     },
     "https": {

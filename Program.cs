@@ -1,4 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using nxtool;
+using nxtool.Data;
+using nxtool.Helpers;
+using nxtool.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +17,13 @@ builder.Services.AddScoped<NxManufService>(sp =>
     var config = sp.GetRequiredService<IConfiguration>();
     return new NxManufService(config);
 });
+
+builder.Services.AddDbContext<NxToolContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("NxToolDb")));
+
+builder.Services.AddScoped<TokenService>();
+
+Console.WriteLine($"SecretKey = {Environment.GetEnvironmentVariable("SecretKey")}");
 
 var app = builder.Build();
 
