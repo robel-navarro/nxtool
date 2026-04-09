@@ -1,6 +1,8 @@
 ﻿using nxtool.Data;
-using nxtool.Models;
 using nxtool.Helpers;
+using nxtool.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace nxtool.Services
 {
@@ -22,9 +24,15 @@ namespace nxtool.Services
         {
             var encryptedToken = AesEncryptionHelper.Encrypt(plainToken, _passphrase);
 
+            // Deterministic hash
+            var hash = Convert.ToBase64String(
+                SHA256.HashData(Encoding.UTF8.GetBytes(plainToken + _passphrase))
+            );
+
             var token = new TokenRecord
             {
                 HashedToken = encryptedToken,
+                TokenHash = hash,
                 ExpiryDate = DateTime.UtcNow.AddYears(1)
             };
 
@@ -34,8 +42,11 @@ namespace nxtool.Services
 
         public bool ValidateToken(string plainToken)
         {
-            var encryptedToken = AesEncryptionHelper.Encrypt(plainToken, _passphrase);
-            return _context.Tokens.Any(t => t.HashedToken == encryptedToken && t.ExpiryDate > DateTime.UtcNow);
+            var hash = Convert.ToBase64String(
+                SHA256.HashData(Encoding.UTF8.GetBytes(plainToken + _passphrase))
+            );
+
+            return _context.Tokens.Any(t => t.TokenHash == hash && t.ExpiryDate > DateTime.UtcNow);
         }
     }
 }

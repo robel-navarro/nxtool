@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using nxtool;
 using nxtool.Data;
 using nxtool.Models;
@@ -33,6 +34,7 @@ public class NxController : ControllerBase
         return Ok(new { boxId = result });
     }
     [HttpPost("add")]
+    [AllowAnonymous]
     public IActionResult AddToken()
     {
         var token = new TokenRecord
@@ -48,6 +50,7 @@ public class NxController : ControllerBase
     }
 
     [HttpGet("list")]
+    [AllowAnonymous]
     public IActionResult GetTokens()
     {
         var tokens = _context.Tokens.ToList();

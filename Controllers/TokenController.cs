@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using nxtool.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using nxtool.Models;
+using nxtool.Services;
 
 namespace nxtool.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class TokenController : ControllerBase
     {
         private readonly TokenService _tokenService;
@@ -16,6 +18,7 @@ namespace nxtool.Controllers
         }
 
         [HttpPost("add")]
+        [AllowAnonymous]
         public IActionResult AddToken([FromBody] TokenRequest request)
         {
             if (string.IsNullOrEmpty(request.PlainToken))
@@ -26,6 +29,7 @@ namespace nxtool.Controllers
         }
 
         [HttpPost("validate")]
+        [AllowAnonymous]
         public IActionResult ValidateToken([FromBody] TokenRequest request)
         {
             var isValid = _tokenService.ValidateToken(request.PlainToken);

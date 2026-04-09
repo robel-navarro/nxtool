@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using nxtool;
 using nxtool.Data;
 using nxtool.Helpers;
+using nxtool.Middleware;
 using nxtool.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,8 @@ builder.Services.AddScoped<TokenService>();
 
 Console.WriteLine($"SecretKey = {Environment.GetEnvironmentVariable("SecretKey")}");
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,7 +39,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseMiddleware<TokenMiddleware>();
 
 app.MapControllers();
 
