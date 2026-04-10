@@ -3,6 +3,7 @@ using nxtool;
 using nxtool.Data;
 using nxtool.Helpers;
 using nxtool.Middleware;
+using nxtool.Models;
 using nxtool.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +27,11 @@ builder.Services.AddScoped<TokenService>();
 
 Console.WriteLine($"SecretKey = {Environment.GetEnvironmentVariable("SecretKey")}");
 
-
+builder.Services.Configure<SecretsConfig>(options =>
+{
+    options.SecretKey = Environment.GetEnvironmentVariable("SecretKey");
+});
+Console.WriteLine($"DB Path = {builder.Configuration.GetConnectionString("NxToolDb")}");
 
 var app = builder.Build();
 

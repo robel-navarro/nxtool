@@ -13,12 +13,15 @@ namespace nxtool.Services
 
         public TokenService(NxToolContext context)
         {
+            _context = context;
 
             Console.WriteLine(Environment.GetEnvironmentVariable("SecretKey"));
-            _context = context;
-            _passphrase = Environment.GetEnvironmentVariable("SecretKey")
-                ?? throw new InvalidOperationException("Passphrase not found in environment variables.");
+            _context = context; _passphrase = Environment.GetEnvironmentVariable("SecretKey") ??
+              throw new InvalidOperationException("Passphrase not found in environment variables.");
+
         }
+
+
 
         public void SaveToken(string plainToken)
         {

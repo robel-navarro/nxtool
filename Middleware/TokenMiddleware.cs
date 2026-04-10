@@ -54,30 +54,36 @@ namespace nxtool.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, TokenService tokenService)
         {
-            // Skip validation if endpoint allows anonymous
-            var endpoint = context.GetEndpoint();
-            var allowAnonymous = endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null;
-
-            if (allowAnonymous)
+            // Only protect /api/nx/* routes
+            if (context.Request.Path.StartsWithSegments("/api/nx"))
             {
-                await _next(context);
-                return;
-            }
+                var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
-            // Otherwise enforce token validation
-            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsync("Missing or invalid Authorization header.");
-                return;
+                if (authHeader == null || !authHeader.StartsWith("Bearer "))
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    await context.Response.WriteAsync("Missing or invalid Authorization header.");
+                    return;
+                }
+
+                var token = authHeader.Substring("Bearer ".Length).Trim();
+
+                // Validate against DB
+                if (!tokenService.ValidateToken(token))
+                {
+
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    await context.Response.WriteAsync("Invalid or expired token.");
+                    return;
+                }
             }
 
             await _next(context);
         }
     }
+
 
 
 }
